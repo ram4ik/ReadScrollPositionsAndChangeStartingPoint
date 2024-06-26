@@ -7,15 +7,54 @@
 
 import SwiftUI
 
-struct ContentView: View {
+struct Item: Identifiable {
+    let id = UUID()
+    let title: String
+    let color: Color
+}
+
+struct ScrollingView: View {
+    
+    let items = [
+        Item(title: "Red", color: .red),
+        Item(title: "Green", color: .green),
+        Item(title: "Blue", color: .blue),
+        Item(title: "Purple", color: .purple),
+        Item(title: "Orange", color: .orange),
+        Item(title: "Pink", color: .pink),
+    ]
+    
+    @State var position = ScrollPosition(idType: Item.ID.self)
+    
     var body: some View {
         VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+            Text(position.viewID.debugDescription)
+            
+            ScrollView {
+                LazyVStack {
+                    ForEach(items) { item in
+                        item.color
+                            .overlay {
+                                VStack {
+                                    Text(item.title)
+                                    
+                                    Text(item.id.uuidString)
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
+                    }
+                }
+                .scrollTargetLayout()
+            }
+            .scrollPosition($position, anchor: .bottom)
+            .defaultScrollAnchor(.top)
         }
-        .padding()
+    }
+}
+
+struct ContentView: View {
+    var body: some View {
+        ScrollingView()
     }
 }
 
